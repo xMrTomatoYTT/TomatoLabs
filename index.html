@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Touchpad</title>
+  <style>
+    body { margin: 0; font-family: sans-serif; background: #111; color: white; }
+    #panel { padding: 10px; background: #222; }
+    input { width: 100px; }
+  </style>
+</head>
+<body ontouchmove="sendPos(event)">
+<div id="panel">
+  <label>IP:</label><input id="ip" value="192.168.1.100"><br>
+  <label>Puerto:</label><input id="port" value="5050"><br>
+  <p id="status">Esperando toque...</p>
+</div>
+
+<script>
+function sendPos(e) {
+  const ip = document.getElementById("ip").value;
+  const port = document.getElementById("port").value;
+
+  if (!e.touches || e.touches.length === 0) return;
+
+  const touch = e.touches[0];
+  const x = Math.floor(touch.clientX);
+  const y = Math.floor(touch.clientY);
+
+  const data = JSON.stringify({ x, y });
+
+  try {
+    navigator.sendBeacon(`http://${ip}:${port}`, data);
+    document.getElementById("status").innerText = `Enviado: ${x}, ${y}`;
+  } catch (err) {
+    document.getElementById("status").innerText = "Error al enviar";
+  }
+}
+</script>
+</body>
+</html>
